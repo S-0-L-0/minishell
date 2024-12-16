@@ -1,0 +1,187 @@
+// Parte 1: Parsing - minishell_parsing.c
+#include "minishell.h"
+#include "libft.h"
+
+// Controlla se il carattere è un argomento valido
+static bool	is_valid_argument(char c)
+{
+	return (c >= 33 && c <= 126);
+}
+
+// Salta il contenuto racchiuso tra le virgolette singole o doppie
+static void	skip_quotes(const char *input, int *i, char quote_type)
+{
+	(*i)++;
+	while (input[*i] && input[*i] != quote_type)
+		(*i)++;
+	if (input[*i] == quote_type)
+		(*i)++;
+	else
+		error_message("Unclosed quote found.");
+}
+
+// Analizza un argomento dalla stringa input e lo aggiunge alla lista degli argomenti del comando
+static void	parse_argument(const char *input, int *i, t_cmd *current_cmd)
+{
+	char	*arg;
+	int		start;
+
+	start = *i;
+	while (input[*i] && is_valid_argument(input[*i]) && input[*i] != ' ')
+		(*i)++;
+	arg = ft_substr(input, start, *i - start);
+	add_argument(current_cmd, arg);
+	free(arg);
+}
+
+// Funzione principale di parsing che analizza l'intera stringa input
+void	parse_input(const char *input, t_cmd **cmd_list)
+{
+	int		i;
+	t_cmd	*current_cmd;
+
+	i = 0;
+	current_cmd = init_command();
+	while (input[i])
+	{
+		if (input[i] == ''')
+			skip_quotes(input, &i, '''); // Gestisce virgolette singole
+		else if (input[i] == '"')
+			skip_quotes(input, &i, '"'); // Gestisce virgolette doppie
+		else if (input[i] == '|')
+		{
+			if (!current_cmd->args)
+				error_message("Invalid pipe usage"); // Errore: pipe senza argomenti
+			else
+			{
+				add_command(cmd_list, current_cmd); // Aggiunge il comando corrente alla lista
+				current_cmd = init_command(); // Inizializza un nuovo comando
+			}
+			i++;
+		}
+		else if (is_valid_argument(input[i]))
+			parse_argument(input, &i, current_cmd); // Analizza l'argomento
+		else
+			i++; // Salta spazi o caratteri non rilevanti
+	}
+	add_command(cmd_list, current_cmd); // Aggiunge l'ultimo comando alla lista
+}
+
+// Parte 2: Gestione degli Errori - minishell_error_handling.c
+#include "minishell.h"
+#include "libft.h"
+
+// Stampa un messaggio di errore su STDERR
+void	error_message(const char *msg)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(msg, STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
+}
+
+// Controlla se ci sono virgolette non chiuse nell'input
+void	check_unclosed_quotes(const char *input)
+{
+	bool	in_single_quote;
+	bool	in_double_quote;
+	int		i;
+
+	in_single_quote = false;
+	in_double_quote = false;
+	i = 0;
+	while (input[i])
+	{
+		if (input[i] == ''')
+			in_single_quote = !in_single_quote; // Alterna lo stato di apertura delle virgolette singole
+		else if (input[i] == '"')
+			in_double_quote = !in_double_quote; // Alterna lo stato di apertura delle virgolette doppie
+		i++;
+	}
+	if (in_single_quote || in_double_quote)
+		error_message("Unclosed quote found."); // Errore se ci sono virgolette non chiuse
+}
+
+// Controlla la presenza di pipe consecutive senza argomenti validi
+void	check_consecutive_pipes(const char *input)
+{
+	int		i;
+	bool	found_pipe;
+
+	i = 0;
+	found_pipe = false;
+	while (input[i])
+	{
+		if (input[i] == '|')
+		{
+			if (found_pipe)
+				error_message("Consecutive pipes found."); // Errore: pipe consecutive
+			found_pipe = true;
+		}
+		else if (is_valid_argument(input[i]))
+			found_pipe = false; // Reset se viene trovato un argomento valido
+		i++;
+	}
+}
+
+// Parte 3: Esecuzione - minishell_execution.c
+#include "minishell.h"
+#include "libft.h"
+
+// Esegue un singolo comando usando fork e execve
+static void	execute_command(t_cmd *cmd)
+{
+	pid_t	pid;
+	int		status;
+
+	pid = fork();
+	if (pid == 0)
+	{
+		if (cmd->input_fd != -1)
+			dup2(cmd->input_fd, STDIN_FILENO); // Reindirizza l'input
+		if (cmd->output_fd != -1)
+			dup2(cmd->output_fd, STDOUT_FILENO); // Reindirizza l'output
+		if (execve(cmd->path, cmd->args, get_environ()) == -1)
+		{
+			perror("minishell"); // Stampa un errore se execve fallisce
+			exit(EXIT_FAILURE);
+		}
+	}
+	else if (pid < 0)
+		perror("minishell"); // Errore nella fork
+	else
+		waitpid(pid, &status, 0); // Attende la terminazione del processo figlio
+	if (WIFEXITED(status))
+		cmd->exit_status = WEXITSTATUS(status); // Salva lo stato di uscita del comando
+}
+
+// Configura le pipe tra i comandi per l'esecuzione in pipeline
+static void	setup_pipes(t_cmd *current, int pipe_fds[2], int *prev_fd)
+{
+	if (current->next)
+	{
+		pipe(pipe_fds); // Crea una pipe per collegare l'output del comando corrente
+		current->output_fd = pipe_fds[1]; // L'output del comando corrente va nella pipe
+		current->next->input_fd = pipe_fds[0]; // L'input del comando successivo viene dalla pipe
+	}
+	if (*prev_fd != -1)
+		current->input_fd = *prev_fd; // Reindirizza l'input se necessario
+}
+
+// Esegue una lista di comandi collegati in pipeline
+void	execute_pipeline(t_cmd *cmd_list)
+{
+	t_cmd	*current;
+	int		pipe_fds[2];
+	int		prev_fd;
+
+	current = cmd_list;
+	prev_fd = -1;
+	while (current)
+	{
+		setup_pipes(current, pipe_fds, &prev_fd); // Configura le pipe per il comando corrente
+		execute_command(current); // Esegue il comando corrente
+		if (current->output_fd != -1)
+			close(current->output_fd); // Chiude l'output della pipe se aperto
+		prev_fd = current->input_fd; // Salva l'input per il prossimo comando
+		current = current->next; // Passa al comando successivo
+	}
