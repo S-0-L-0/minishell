@@ -14,7 +14,7 @@ void	trim_end_spaces(char *start, char *end)
 
 t_fullcmd *split_string_to_list(char *str, t_fullcmd *head, t_quotes *quotes)
 {
-	t_fullcmd    *current;
+	t_fullcmd	*current;
 
 	current = head;
 	set_squotes(quotes, str);

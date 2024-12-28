@@ -1,30 +1,30 @@
 #include "../../includes/mini.h"
 
-// static void display_command_info(t_fullcmd *cmd, int cmd_num)
-// {
-// 	printf("\nCommand #%d:\n", cmd_num);
-// 	printf("Original string: \"%s\"\n", cmd->line);
-// 	printf("Parsed command: ");
-// 	print_cmd_list(*cmd->cmd_head);
-// 	printf("----------------------------------------\n");
-// }
+void display_command_info(t_fullcmd *cmd, int cmd_num)
+{
+	printf("\nCommand #%d:\n", cmd_num);
+	printf("Original string: \"%s\"\n", cmd->line);
+	printf("Parsed command: ");
+	print_cmd_list(*cmd->cmd_head);
+	printf("----------------------------------------\n");
+}
 
-// static void display_all_commands(t_fullcmd *list)
-// {
-// 	t_fullcmd	*current;
-// 	int			cmd_num;
+void display_all_commands(t_fullcmd *list)
+{
+	t_fullcmd	*current;
+	int			cmd_num;
 
-// 	current = list;
-// 	cmd_num = 1;
-// 	while (current)
-// 	{
-// 		display_command_info(current, cmd_num);
-// 		current = (t_fullcmd *)current->next;
-// 		cmd_num++;
-// 	}
-// }
+	current = list;
+	cmd_num = 1;
+	while (current)
+	{
+		display_command_info(current, cmd_num);
+		current = (t_fullcmd *)current->next;
+		cmd_num++;
+	}
+}
 
-static int initialize_shell(int argc, char *argv[], t_fullcmd **list)
+int initialize_shell(int argc, char *argv[], t_fullcmd **list)
 {
 	t_quotes quotes;
 

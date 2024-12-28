@@ -20,26 +20,14 @@
 #define SYNERR "minishell: syntax error near unexpected token '|'\n"
 #define QTERR "minishell: Unbalanced quotes in the string.\n"
 
-enum type {
-	COMMAND,    // di default 0
-	FLAG,   // di default 1
-	COMMAND_ARGUMENT,   // di default 2
-	INPUT_REDIRECTION,   // di default 3
-	OUTPUT_REDIRECTION,   // di default 4
-	APPEND_REDIRECTION,   // di default 5
-	
-};
-
 typedef struct s_cmd
 {
 	char			*word;
-	enum type		type;
 	struct s_cmd	*next;
 }	t_cmd;
 
 typedef struct s_fullcmd
 {
-
 	char				*line;
 	struct s_fullcmd	*next;
 	t_cmd				**cmd_head;
@@ -64,11 +52,6 @@ typedef struct s_pipe
 
 }	t_pipe;
 
-// int			check_pipe(char *str);
-// void		set_squotes (t_quotes *quotes, char *str);
-// int			check_pipe(char *str);
-// void		set_squotes(t_quotes *quotes, char *str);
-// t_fullcmd	*split_string_to_list(char *str, t_fullcmd *head, t_quotes *quotes);
 void		skip_spaces(t_quotes *quotes);
 t_fullcmd	*split_string_to_list(char *str, t_fullcmd *head, t_quotes *quotes);
 void		free_cmd_list(t_cmd *cmd);
@@ -96,5 +79,12 @@ char		*ft_strjoin(char *s1, char *s2);
 int			ft_strlen(const char *str);
 char		*ft_strdup(const char *s1);
 void		set_pipe(t_pipe *pipe);
+int			initialize_shell(int argc, char *argv[], t_fullcmd **list);
+int			check_red(char *str, char red_sign);
+int			get_inputred_fd(t_cmd *cmd);
+
+
+void		display_all_commands(t_fullcmd *list);
+void		display_command_info(t_fullcmd *cmd, int cmd_num);
 
 #endif

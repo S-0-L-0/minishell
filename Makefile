@@ -15,18 +15,15 @@ BUILD_DIR = ./src/test/main.c \
 			./src/executor/find_path.c \
 			./src/utils/ft_split.c \
 			./src/utils/libft_func.c \
-			./src/utils/utils.c  \
-
-
+			./src/utils/utils.c \
+			./src/executor/redirections.c \
 
 SRC = $(BUILD_DIR) ## file.c 
 OBJ = $(SRC:%.c=%.o)
 
 all: $(NAME)
 $(NAME):	$(OBJ)
-		gcc -c $(FLAGS) $(SRC)
 		@make -C libft
-		# gcc $(OBJ) ${LIBFT} -o $(NAME) 
 		gcc $(OBJ) ${LIBFT} -o $(NAME) -ltermcap
 
 clean:

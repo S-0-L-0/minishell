@@ -16,7 +16,7 @@ int	execute_line(t_fullcmd *list, char **envp)
 	char		*path;
 	char		**cmd;
 	int			i;
-	t_cmd		**cmd_head_tmp;
+	t_cmd		*cmd_head_tmp;
 	t_pipe		ppoption;
 
 	i = 0;
@@ -26,7 +26,12 @@ int	execute_line(t_fullcmd *list, char **envp)
 	while (tmp)
 	{
 		i = 0;
-		cmd_head_tmp = tmp->cmd_head;
+		cmd_head_tmp = *(tmp->cmd_head);
+		if (check_red(tmp->line, '<'))
+		{
+			ppoption.tmp_fd = get_inputred_fd(cmd_head_tmp);
+			dup2(ppoption.tmp_fd, 0);
+		}
 		if(tmp != list)
 		{
 			close(ppoption.fd[1]);
@@ -52,13 +57,9 @@ int	execute_line(t_fullcmd *list, char **envp)
 				close(ppoption.fd[0]);
 				dup2(ppoption.fd[1], 1);
 			}
-			while (cmd_head_tmp[i])
-			{
-				path = find_path((cmd_head_tmp[i])->word);
-				cmd = make_command(cmd_head_tmp[i]);
-				execute_command(path, cmd, envp);
-				i ++;
-			}
+			path = find_path(cmd_head_tmp->word);
+			cmd = make_command(cmd_head_tmp);
+			execute_command(path, cmd, envp);
 		}
 		tmp = tmp->next;
 	}
