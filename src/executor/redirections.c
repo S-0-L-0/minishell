@@ -31,7 +31,6 @@ int	check_red(char *str, char red_sign)
 int	get_inputred_fd(t_cmd *cmd)
 {
 	int		i;
-	int		j;
 	int		s_quote;
 	int		d_quote;
 	t_cmd	*tmp;
@@ -39,7 +38,6 @@ int	get_inputred_fd(t_cmd *cmd)
 	s_quote = 0;
 	d_quote = 0;
 	tmp = cmd;
-	j = 0;
 	while (tmp)
 	{
 		i = 0;
@@ -56,7 +54,7 @@ int	get_inputred_fd(t_cmd *cmd)
 			else if (tmp->word[i] == '<' && !s_quote && !d_quote)
 			{
 				printf("result: %s\n", tmp->next->word);
-				return(atoi(tmp->next->word));
+				return(open(tmp->next->word, O_RDONLY, 0644));
 			}
 			i++;
 		}

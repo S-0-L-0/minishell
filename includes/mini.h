@@ -16,6 +16,7 @@
 #include <term.h>                   // tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
 #include <stdlib.h>                 // getenv
 #include <stdbool.h>
+#include "../libft/libft.h"
 
 #define SYNERR "minishell: syntax error near unexpected token '|'\n"
 #define QTERR "minishell: Unbalanced quotes in the string.\n"
@@ -82,7 +83,7 @@ void		set_pipe(t_pipe *pipe);
 int			initialize_shell(int argc, char *argv[], t_fullcmd **list);
 int			check_red(char *str, char red_sign);
 int			get_inputred_fd(t_cmd *cmd);
-
+int			red_checker(char *str);
 
 void		display_all_commands(t_fullcmd *list);
 void		display_command_info(t_fullcmd *cmd, int cmd_num);

@@ -37,6 +37,9 @@ int initialize_shell(int argc, char *argv[], t_fullcmd **list)
 	if (pipe_checker(argv[1]))
 		return (1);
 
+	if (red_checker(argv[1]))
+		return (1);
+
 	*list = NULL;
 	*list = split_string_to_list(argv[1], *list, &quotes);
 	if (!*list)

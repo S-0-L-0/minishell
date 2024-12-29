@@ -15,17 +15,14 @@ int	execute_line(t_fullcmd *list, char **envp)
 	t_fullcmd	*tmp;
 	char		*path;
 	char		**cmd;
-	int			i;
 	t_cmd		*cmd_head_tmp;
 	t_pipe		ppoption;
 
-	i = 0;
 	cmd_head_tmp = NULL;
 	tmp = list;
 	set_pipe(&ppoption);
 	while (tmp)
 	{
-		i = 0;
 		cmd_head_tmp = *(tmp->cmd_head);
 		if (check_red(tmp->line, '<'))
 		{
