@@ -16,8 +16,7 @@ BUILD_DIR = ./src/test/main.c \
             ./src/executor/find_path.c \
             ./src/executor/redirections.c \
             ./src/utils/ft_split.c \
-            ./src/utils/libft_func.c \
-            ./src/utils/utils.c
+            ./src/utils/utils.c \
 
 SRC = $(BUILD_DIR)
 OBJ = $(SRC:.c=.o)

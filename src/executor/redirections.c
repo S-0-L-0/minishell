@@ -28,7 +28,7 @@ int	check_red(char *str, char red_sign)
 	return(0);
 }
 
-int	get_inputred_fd(t_cmd *cmd)
+int	get_red_fd(t_cmd *cmd, char red_sign)
 {
 	int		i;
 	int		s_quote;
@@ -51,10 +51,33 @@ int	get_inputred_fd(t_cmd *cmd)
 				d_quote = 1;
 			else if (tmp->word[i] == '"' && !s_quote && d_quote)
 				d_quote = 0;
-			else if (tmp->word[i] == '<' && !s_quote && !d_quote)
+			else if (tmp->word[i] == red_sign && !s_quote && !d_quote)
 			{
-				printf("result: %s\n", tmp->next->word);
-				return(open(tmp->next->word, O_RDONLY, 0644));
+				i = 0;
+				while (ft_isdigit(tmp->word[i]))
+					i++;
+				tmp->word = tmp->word + i;
+				if (!ft_strncmp(tmp->word, "<", ft_strlen(tmp->word)))
+				{
+					if (access(tmp->next->word, F_OK) == -1)
+					{
+					printf("Error: file not found\n");
+					return (1);
+					}
+					return(open(tmp->next->word, O_RDONLY | O_TRUNC, 0644));
+				}
+				else if (!ft_strncmp(tmp->word, ">", ft_strlen(tmp->word)))
+				{
+					return(open(tmp->next->word, O_CREAT | O_WRONLY | O_TRUNC, 0644));
+				}
+				else if (!ft_strncmp(tmp->word, "<<", ft_strlen(tmp->word)))
+				{
+					printf("stocazzo\n");
+				}
+				else if (!ft_strncmp(tmp->word, ">>", ft_strlen(tmp->word)))
+				{
+					return(open(tmp->next->word, O_CREAT | O_WRONLY | O_APPEND, 0644));
+				}
 			}
 			i++;
 		}

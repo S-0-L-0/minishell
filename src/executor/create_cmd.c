@@ -12,17 +12,27 @@ char **make_command(t_cmd *cmd_list)
 	current = cmd_list;
 	while (current)
 	{
-		size ++;
+		if (current->is_arg)
+			size ++;
+		else 
+			size --;
 		current = current->next;
 	}
+	if(size == 0)
+		return(NULL);
 	cmd = malloc(sizeof(char *) * (size + 1));
 	if (!cmd)
 		return (NULL);
 	while (cmd_list)
 	{
-		cmd[i] = strdup(cmd_list->word);
+		if (cmd_list->is_arg)
+		{
+			cmd[i] = strdup(cmd_list->word);
+			i++;
+		}
+		else
+			cmd_list = cmd_list->next;
 		cmd_list = cmd_list->next;
-		i++;
 	}
 	cmd[i] = NULL;
 	return (cmd);

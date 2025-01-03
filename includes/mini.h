@@ -25,6 +25,7 @@ typedef struct s_cmd
 {
 	char			*word;
 	struct s_cmd	*next;
+	bool			is_arg;
 }	t_cmd;
 
 typedef struct s_fullcmd
@@ -75,15 +76,14 @@ char		**make_command(t_cmd *cmd_list);
 int			execute_command(char *path, char **cmd, char **envp);
 int			execute_line(t_fullcmd *list, char **envp);
 void		free_matrix(char **matrix);
-char		**ft_split(char const *s, char c);
-char		*ft_strjoin(char *s1, char *s2);
-int			ft_strlen(const char *str);
-char		*ft_strdup(const char *s1);
 void		set_pipe(t_pipe *pipe);
 int			initialize_shell(int argc, char *argv[], t_fullcmd **list);
 int			check_red(char *str, char red_sign);
-int			get_inputred_fd(t_cmd *cmd);
+int			get_red_fd(t_cmd *cmd, char red_sign);
 int			red_checker(char *str);
+void		print_cmd(char **cmd);
+
+void 		remove_redirection_nodes(t_cmd **head);
 
 void		display_all_commands(t_fullcmd *list);
 void		display_command_info(t_fullcmd *cmd, int cmd_num);

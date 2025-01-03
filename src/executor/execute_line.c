@@ -26,8 +26,10 @@ int	execute_line(t_fullcmd *list, char **envp)
 		cmd_head_tmp = *(tmp->cmd_head);
 		if (check_red(tmp->line, '<'))
 		{
-			ppoption.tmp_fd = get_inputred_fd(cmd_head_tmp);
+			ppoption.tmp_fd = get_red_fd(cmd_head_tmp , '<');
 			dup2(ppoption.tmp_fd, 0);
+			close(ppoption.tmp_fd);
+			
 		}
 		if(tmp != list)
 		{
@@ -51,12 +53,29 @@ int	execute_line(t_fullcmd *list, char **envp)
 		{
 			if(tmp->next != NULL)
 			{
-				close(ppoption.fd[0]);
-				dup2(ppoption.fd[1], 1);
+				if (check_red(tmp->line, '>'))
+				{
+					close(ppoption.fd[0]);
+					close(ppoption.fd[1]);
+					dup2(get_red_fd(cmd_head_tmp, '>'), 1);
+				}
+				else
+				{
+					close(ppoption.fd[0]);
+					dup2(ppoption.fd[1], 1);
+					close(ppoption.fd[1]);
+				}
 			}
+			if (check_red(tmp->line, '>'))
+				{
+					close(ppoption.fd[0]);
+					close(ppoption.fd[1]);
+					dup2(get_red_fd(cmd_head_tmp, '>'), 1);
+				}
 			path = find_path(cmd_head_tmp->word);
 			cmd = make_command(cmd_head_tmp);
-			execute_command(path, cmd, envp);
+			if (cmd)
+				execute_command(path, cmd, envp);
 		}
 		tmp = tmp->next;
 	}

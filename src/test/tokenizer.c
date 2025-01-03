@@ -15,6 +15,20 @@ void	add_cmd_node(t_cmd *new_cmd, t_cmd **cmd_head)
 	}
 }
 
+static bool ck_mi_stai_sul_cazzo(char *str)
+{
+	while(str)
+	{
+		if (ft_isdigit(*str))
+			str ++;
+		else if (*str == '<' || *str == '>')
+			return (false);
+		else
+			break ;
+	}
+	return (true);
+}
+
 int	create_cmd_node(char *start, int len, t_cmd **cmd_head)
 {
 	t_cmd   *new_cmd;
@@ -23,6 +37,7 @@ int	create_cmd_node(char *start, int len, t_cmd **cmd_head)
 	if (!new_cmd)
 		return (1);
 	new_cmd->word = malloc(sizeof(char) * (len + 1));
+	new_cmd->is_arg = true;
 	if (!new_cmd->word)
 	{
 		free(new_cmd);
@@ -31,6 +46,7 @@ int	create_cmd_node(char *start, int len, t_cmd **cmd_head)
 	strncpy(new_cmd->word, start, len);
 	new_cmd->word[len] = '\0';
 	new_cmd->next = NULL;
+	new_cmd->is_arg = ck_mi_stai_sul_cazzo(new_cmd->word);
 	add_cmd_node(new_cmd, cmd_head);
 	return (0);
 }
