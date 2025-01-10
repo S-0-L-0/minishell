@@ -34,6 +34,10 @@ int	get_red_fd(t_cmd *cmd, char red_sign)
 	int		s_quote;
 	int		d_quote;
 	t_cmd	*tmp;
+	// int		pipefd[2];
+	// pid_t	pid;
+	// char	*prompt;
+	
 
 	s_quote = 0;
 	d_quote = 0;
@@ -72,7 +76,35 @@ int	get_red_fd(t_cmd *cmd, char red_sign)
 				}
 				else if (!ft_strncmp(tmp->word, "<<", ft_strlen(tmp->word)))
 				{
-					printf("stocazzo\n");
+					// if (pipe(pipefd) == -1)
+					// {
+					// 	printf("Error: pipe failed\n");
+					// 	return (1);
+					// }
+					// pid = fork();
+					// if (pid == -1)
+					// {
+					// 	printf("fork failed\n");
+					// 	return (1);
+					// }
+					// if (pid != 0)
+					// {
+					// 	close(pipefd[1]);
+					// 	prompt = NULL;
+					// 	while (ft_strcmp(prompt, tmp->next->word) != 0)
+					// 	{
+					// 		prompt = readline(">");
+					// 		write (pipefd[0], prompt, ft_strlen(prompt));
+					// 	}
+					// 	close(pipefd[0]);
+					// }
+					// else
+					// {
+					// 	close(pipefd[0]);
+					// 	waitpid(pid, NULL, 0);
+					// 	return(pipefd[1]);
+					// }
+					printf("Here doc not implemented yet\n");
 				}
 				else if (!ft_strncmp(tmp->word, ">>", ft_strlen(tmp->word)))
 				{

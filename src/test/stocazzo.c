@@ -24,24 +24,24 @@ void display_all_commands(t_fullcmd *list)
 	}
 }
 
-int initialize_shell(int argc, char *argv[], t_fullcmd **list)
+int initialize_shell(char *line, t_fullcmd **list)
 {
 	t_quotes quotes;
 
-	if (argc < 1)
-	{
-		printf("Usage: %s \"command string\"\n", argv[0]);
-		return (1);
-	}
+	// if (argc < 1)
+	// {
+	// 	printf("Usage: %s \"command string\"\n", argv[0]);
+	// 	return (1);
+	// }
 	
-	if (pipe_checker(argv[1]))
+	if (pipe_checker(line))
 		return (1);
 
-	if (red_checker(argv[1]))
+	if (red_checker(line))
 		return (1);
 
 	*list = NULL;
-	*list = split_string_to_list(argv[1], *list, &quotes);
+	*list = split_string_to_list(line, *list, &quotes);
 	if (!*list)
 		return (1);
 
@@ -54,14 +54,14 @@ int initialize_shell(int argc, char *argv[], t_fullcmd **list)
 	return (0);
 }
 
-int main(int argc, char **argv, char **envp)
-{
-	t_fullcmd *list;
+// int main(int argc, char **argv, char **envp)
+// {
+// 	t_fullcmd *list;
 
-	if (initialize_shell(argc, argv, &list))
-		return (1);
-	//display_all_commands(list);
-	execute_line(list, envp);
-	free_all_lists(list);
-	return (0);
-}
+// 	if (initialize_shell(argc, argv, &list))
+// 		return (1);
+// 	//display_all_commands(list);
+// 	execute_line(list, envp);
+// 	free_all_lists(list);
+// 	return (0);
+// }

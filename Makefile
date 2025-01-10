@@ -2,8 +2,9 @@ NAME = minishell
 FLAGS = -Wall -Wextra -Werror -g
 LIBFT_DIR = ./libft
 LIBFT = $(LIBFT_DIR)/libft.a
-BUILD_DIR = ./src/test/main.c \
+BUILD_DIR = ./src/minishell.c \
             ./src/test/cleanup.c \
+            ./src/test/stocazzo.c \
             ./src/test/list_utils.c \
             ./src/test/parser.c \
             ./src/test/pipe_checker.c \
@@ -30,7 +31,7 @@ $(LIBFT):
 	gcc $(FLAGS) -c $< -o $@
 
 $(NAME): $(OBJ) $(LIBFT)
-	gcc $(FLAGS) $(OBJ) -L$(LIBFT_DIR) -lft -o $(NAME) -ltermcap
+	gcc $(FLAGS) $(OBJ) -L$(LIBFT_DIR) -lft -o $(NAME) -ltermcap -lreadline
 
 clean:
 	rm -f $(OBJ)

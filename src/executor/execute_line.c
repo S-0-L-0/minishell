@@ -17,17 +17,25 @@ int	execute_line(t_fullcmd *list, char **envp)
 	char		**cmd;
 	t_cmd		*cmd_head_tmp;
 	t_pipe		ppoption;
+	int			in_int;
+	int			out_int;
 
 	cmd_head_tmp = NULL;
 	tmp = list;
 	set_pipe(&ppoption);
 	while (tmp)
 	{
+		in_int = 0;
+		out_int = 1;
 		cmd_head_tmp = *(tmp->cmd_head);
 		if (check_red(tmp->line, '<'))
 		{
+			if (ft_isdigit(cmd_head_tmp->word[0]))
+			{
+				in_int = atoi(cmd_head_tmp->word);
+			}
 			ppoption.tmp_fd = get_red_fd(cmd_head_tmp , '<');
-			dup2(ppoption.tmp_fd, 0);
+			dup2(ppoption.tmp_fd, in_int);
 			close(ppoption.tmp_fd);
 			
 		}
@@ -36,7 +44,7 @@ int	execute_line(t_fullcmd *list, char **envp)
 			close(ppoption.fd[1]);
 			ppoption.tmp_fd = dup(ppoption.fd[0]);
 			close(ppoption.fd[0]);
-			dup2(ppoption.tmp_fd, 0);
+			dup2(ppoption.tmp_fd, in_int);
 		}
 		if (pipe(ppoption.fd) == -1)
 		{
@@ -55,22 +63,30 @@ int	execute_line(t_fullcmd *list, char **envp)
 			{
 				if (check_red(tmp->line, '>'))
 				{
+					if (ft_isdigit(cmd_head_tmp->word[0]))
+					{
+						out_int = atoi(cmd_head_tmp->word);
+					}
 					close(ppoption.fd[0]);
 					close(ppoption.fd[1]);
-					dup2(get_red_fd(cmd_head_tmp, '>'), 1);
+					dup2(get_red_fd(cmd_head_tmp, '>'), out_int);
 				}
 				else
 				{
 					close(ppoption.fd[0]);
-					dup2(ppoption.fd[1], 1);
+					dup2(ppoption.fd[1], out_int);
 					close(ppoption.fd[1]);
 				}
 			}
 			if (check_red(tmp->line, '>'))
 				{
+					if (ft_isdigit(cmd_head_tmp->word[0]))
+					{
+						out_int = atoi(cmd_head_tmp->word);
+					}
 					close(ppoption.fd[0]);
 					close(ppoption.fd[1]);
-					dup2(get_red_fd(cmd_head_tmp, '>'), 1);
+					dup2(get_red_fd(cmd_head_tmp, '>'), out_int);
 				}
 			path = find_path(cmd_head_tmp->word);
 			cmd = make_command(cmd_head_tmp);

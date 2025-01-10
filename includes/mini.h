@@ -77,7 +77,7 @@ int			execute_command(char *path, char **cmd, char **envp);
 int			execute_line(t_fullcmd *list, char **envp);
 void		free_matrix(char **matrix);
 void		set_pipe(t_pipe *pipe);
-int			initialize_shell(int argc, char *argv[], t_fullcmd **list);
+int			initialize_shell(char *line, t_fullcmd **list);
 int			check_red(char *str, char red_sign);
 int			get_red_fd(t_cmd *cmd, char red_sign);
 int			red_checker(char *str);

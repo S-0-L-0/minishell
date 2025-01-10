@@ -1,40 +1,29 @@
-#include "../includes/minishell.h"
+#include "../includes/mini.h"
+#include "../includes/print.h"
 
-int main(int ac, char **av, char **build)
+int main(int argc, char **argv, char **envp)
 {
-    (void)ac;
-    (void)av;
-    t_general all;
-    char *line;
-    char *args[MAX_ARGS + 1]; // Aggiunto uno spazio per il terminatore NULL
-    start(&all, build);
-
-    
-    printf(RED "%s", HELLO RESET);
-    while (1)
-    {
-        // Leggi l'input
-        line = readline(RED "minishell> " RESET);
-        if (!line)
-            break;
-
-        // Aggiungi l'input alla history
-        if (line[0] != '\0')
-            add_history(line);
-
-        if (check_double_single_quote(line) != 1)
-            return (_errors());//int a scelta per l'errore da stampare
-        lexer(line);
-        // Dividi l'input in token
-        // parser() tokenization
-        int argc = split_line(line, args);
-
-        // Esegui il comando se ci sono argomenti
-        if (argc > 0)
-            execute_command(args, &all);
-
-        // Libera la memoria allocata per l'input
-        free(line);
-    }
-    return 0;
+	t_fullcmd *list;
+	char *line;
+	if (argc && argv)
+	{
+		printf(RED "%s", HELLO RESET);
+		while (1)
+		{
+			// Leggi l'input
+			line = readline(RED "minishell> "RESET);
+			write(1, "prima\n", 6);
+			if (!line)
+				break;
+			// Aggiungi l'input alla history
+			if (line[0] != '\0')
+				add_history(line);
+			if (initialize_shell(line, &list))
+				return (1);
+			execute_line(list, envp);
+			write(1, "dopo\n", 5);
+		}
+			free_all_lists(list);
+	}
+	return 0;
 }

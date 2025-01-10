@@ -58,24 +58,3 @@ int	red_checker(char *str)
 	}
 	return (0);
 }
-
-// void remove_redirection_nodes(t_cmd **head)
-// {
-//     t_cmd *current = *head;
-//     t_cmd *temp;
-
-//     while (current && current->next)
-//     {
-//         if (current->word[0] == '<')
-//         {
-//             temp = current->next->next;
-//             free(current->word);
-//             free(current->next->word);
-//             free(current->next);
-//             free(current);
-//             *head = temp;
-//             return;
-//         }
-//         current = current->next;
-//     }
-// }
